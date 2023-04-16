@@ -12,6 +12,8 @@ import java.io.IOException;
 public class RequestParamServlet extends HttpServlet {
     @Override
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // request.getParameter() -> GET URL과 POST HTML Form 형식도 둘 다 지원함
+        // post맨으로 body의 form요청을 하면 content-type: application/x-www-form-urlencoded
         System.out.println("RequestParamServlet.service");
 
         System.out.println("[전체 파라미터 조회] - start");
