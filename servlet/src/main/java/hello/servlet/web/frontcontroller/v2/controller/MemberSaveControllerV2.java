@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class MemberSaveControllerV2 implements ControllerV2 {
-    MemberRepository memberRepository = MemberRepository.getInstance();
+    private MemberRepository memberRepository = MemberRepository.getInstance();
 
     @Override
     public MyView process(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
