@@ -56,6 +56,7 @@ public class FrontControllerServletV5 extends HttpServlet {
     protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // handler -> controller
         // handlerMappingMap -> Controller, handlerAdapter -> ControllerAdapter
+        // 1. 핸들러 매핑 (핸들러 조회) => 핸들러: controller, adapter: controller(handler)를 mv로 반환하기 위해 사용
         Object handler = getHandler(request);
 
         if (handler == null){
@@ -63,15 +64,18 @@ public class FrontControllerServletV5 extends HttpServlet {
             return;
         }
 
+        // 2. 핸들러 어댑터 목록 (핸들러를 처리할 수 있는 핸들러 어댑터 조회)
         MyHandlerAdapter adapter = getHandlerAdapter(handler);
 
         // 찾은 adapter에 handler(controller) 정보를 넣어준다.
         // 반환은 모델로 해줌
+        // 3. adapter를 사용하여 handler를 mv로 반환
         ModelView mv = adapter.handler(request, response, handler);
 
         String viewName = mv.getViewName();
+        // 4. 반환한 mv로 View를 반환
         MyView view = viewResolver(viewName);
-
+        // 5. View -> HTML
         view.render(mv.getModel(), request, response);
     }
 
