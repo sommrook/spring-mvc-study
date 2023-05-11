@@ -1,9 +1,11 @@
 package hello.springmvc.basic.request;
 
+import hello.springmvc.basic.HelloData;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -83,6 +85,27 @@ public class RequestParamController {
     public String requestParamMap(@RequestParam Map<String, Object> paramMap){
 
         log.info("username={}, age={}", paramMap.get("username"), paramMap.get("age"));
+        return "ok";
+    }
+
+    @ResponseBody
+    @RequestMapping("/model-attribute-v1")
+    public String modelAttributeV1(@ModelAttribute HelloData helloData){
+        // FastAPI에서는 request body를 BaseModel로 사용할 수 있었음. 근데 ModelAttribute는 RequestParameter임
+        log.info("username={}, age={}", helloData.getUsername(), helloData.getAge());
+        log.info("helloData={}", helloData);
+
+        return "ok";
+    }
+
+    @ResponseBody
+    @RequestMapping("/model-attribute-v2")
+    public String modelAttributeV2(HelloData helloData){
+        // 생략을 했을 때 직접 만든 class는 ModelAttriute로 인식하고, int/String 이런 타입이면 RequestParameter로 인식한다.
+        // FastAPI에서는 request body를 BaseModel로 사용할 수 있었음. 근데 ModelAttribute는 RequestParameter임
+        log.info("username={}, age={}", helloData.getUsername(), helloData.getAge());
+        log.info("helloData={}", helloData);
+
         return "ok";
     }
 }
