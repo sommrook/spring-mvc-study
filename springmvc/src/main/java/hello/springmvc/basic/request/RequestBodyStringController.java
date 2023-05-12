@@ -40,7 +40,7 @@ public class RequestBodyStringController {
     }
 
     @PostMapping("/request-body-string-v3")
-    public HttpEntity<String> requestBodyStringV3(HttpEntity<String> httpEntity) throws IOException {
+    public HttpEntity<String> requestBodyStringV3(HttpEntity<String> httpEntity){
 
         String body = httpEntity.getBody();
         log.info("messageBody={}", body);
