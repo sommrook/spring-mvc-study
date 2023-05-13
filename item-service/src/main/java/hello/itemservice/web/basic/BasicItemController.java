@@ -1,0 +1,145 @@
+package hello.itemservice.web.basic;
+
+import hello.itemservice.domain.item.Item;
+import hello.itemservice.domain.item.ItemRepository;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
+
+@Slf4j
+@Controller
+@RequestMapping("/basic/items")
+@RequiredArgsConstructor
+public class BasicItemController {
+
+    private final ItemRepository itemRepository;
+
+//    @Autowired
+//    public BasicItemController(ItemRepository itemRepository){
+//        this.itemRepository = itemRepository;
+//    }
+
+    @GetMapping
+    public String items(Model model) {
+        List<Item> items = itemRepository.findAl();
+        for (Item item : items){
+            log.info("item name {}", item.getItemName());
+        }
+
+        model.addAttribute("items", items);
+        return "basic/items";
+    }
+
+    @GetMapping("/{itemId}")
+    public String item(@PathVariable Long itemId, Model model){
+        Item item = itemRepository.findById(itemId);
+        model.addAttribute("item", item);
+
+        // 원래는 컨트롤러에서 모델에 직접 담고 값을 꺼내야 한다.
+        // 그런데 쿼리 파라미터는 자주 사용해서 타입리프에서 직접 지원한다.
+        return "basic/item";
+    }
+
+
+    @GetMapping("/add")
+    public String addForm(){
+        return "basic/addForm";
+    }
+
+    //th:action이 비어있으면 현재 url로 간다.
+//    @PostMapping("/add")
+    public String save(@ModelAttribute Item item, Model model){
+        Item savedItem = itemRepository.save(item);
+
+        model.addAttribute("item", savedItem);
+        return "basic/item";
+    }
+
+//    @PostMapping("/add")
+    public String addItemV1(@RequestParam String itemName,
+                            @RequestParam int price,
+                            @RequestParam Integer quantity,
+                            Model model) {
+        Item item = new Item();
+        item.setItemName(itemName);
+        item.setPrice(price);
+        item.setQuantity(quantity);
+        itemRepository.save(item);
+        model.addAttribute("item", item);
+        return "basic/item";
+    }
+
+//    @PostMapping("/add")
+    public String addItemV2(@ModelAttribute("item") Item item) {
+        itemRepository.save(item); //model.addAttribute("item", item); //자동 추가, 생략 가능
+        return "basic/item";
+    }
+
+    //ModelAttribute에 Model에 보내야 하는 이름과 똑같이 적용하면 addAttribute를 해주지 않아도 된다.
+    // 하는일이 2개 => 1. request로 받기 2. Model에 보내주기
+    // 이름을 생략하면 클래스명을 소문자화 한것으로 지정된다.
+//    @PostMapping("/add")
+    public String addItemV3(@ModelAttribute Item item){
+        itemRepository.save(item);
+
+        return "basic/item";
+    }
+
+    // ModelAttribute 생략 가능
+    // 문제! -> 새로고침하면 계속 add가 된다.
+    // 웹 브라우저의 새로 고침은 마지막에 서버에 전송한 데이터를 다시 전송함
+//    @PostMapping("/add")
+    public String addItemV4(Item item){
+        itemRepository.save(item);
+
+        return "basic/item";
+    }
+
+//   @PostMapping("/add")
+    public String addItemV5(Item item){
+        itemRepository.save(item);
+
+        return "redirect:/basic/items/" + item.getId();
+    }
+
+    @PostMapping("/add")
+    public String addItemV6(Item item, RedirectAttributes redirectAttributes){
+        Item savedItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        redirectAttributes.addAttribute("status", true);
+
+        //redirectAttribute에 넣은 itemId값으로 치환한다.
+        //남은 애들은 쿼리 파라미터로 들어감
+        return "redirect:/basic/items/{itemId}";
+    }
+
+    @GetMapping("/{itemId}/edit")
+    public String editForm(@PathVariable Long itemId, Model model){
+        Item findItem = itemRepository.findById(itemId);
+        model.addAttribute("item", findItem);
+        return "basic/editForm";
+    }
+
+    @PostMapping("/{itemId}/edit")
+    public String edit(@PathVariable Long itemId, @ModelAttribute Item item){
+        itemRepository.update(itemId, item);
+        return "redirect:/basic/items/{itemId}";
+    }
+
+
+    //생성자 생성 후에 호출 - 반대: @PreDestroy
+    @PostConstruct
+    public void init(){
+        itemRepository.save(new Item("itemA", 10000, 10));
+        itemRepository.save(new Item("itemB", 20000, 20));
+    }
+
+
+}
