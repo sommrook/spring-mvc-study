@@ -28,6 +28,7 @@ public class BasicItemController {
 
     @GetMapping
     public String items(Model model) {
+        // item 화면 목록 보여주는 컨트롤러
         List<Item> items = itemRepository.findAl();
         for (Item item : items){
             log.info("item name {}", item.getItemName());
@@ -39,6 +40,7 @@ public class BasicItemController {
 
     @GetMapping("/{itemId}")
     public String item(@PathVariable Long itemId, Model model){
+        // item 상세 화면 보여주는 컨트롤러
         Item item = itemRepository.findById(itemId);
         model.addAttribute("item", item);
 
@@ -50,6 +52,7 @@ public class BasicItemController {
 
     @GetMapping("/add")
     public String addForm(){
+        // item을 추가할 때 보여주는 화면 컨트롤러
         return "basic/addForm";
     }
 
@@ -111,6 +114,16 @@ public class BasicItemController {
 
     @PostMapping("/add")
     public String addItemV6(Item item, RedirectAttributes redirectAttributes){
+        // item 추가 화면에서 저장(추가 실행)을 눌렀을 때 form post로 인해 실행되는 컨트롤러
+        /*
+        새로운 item을 저장한 후에 저장한 새로운 item의 상세화면으로 return한다.
+        이때 주의할점은 그냥 바로 return /basic/items로 하게 되면 (바로 뷰 화면 호출)
+        제일 마지막 호출 된 url은 현재 메소드인 저장 메소드이기 때문에
+        새로고침 할 때마다 저장 요청을 하게 된다.
+        그래서 redirect로 GET /basic/items/{itemId}를 호출한다.
+        => ***view화면 호출 시 return으로 경로 설정을 하지만 이것은 사용자가 입력하는 url정보는 아님 (동적 view여서 모든 페이지가 컨트롤러를 통해 나옴)
+        */
+
         Item savedItem = itemRepository.save(item);
         redirectAttributes.addAttribute("itemId", savedItem.getId());
         redirectAttributes.addAttribute("status", true);
