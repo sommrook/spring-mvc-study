@@ -10,8 +10,10 @@
 <script>
       var username = [[${user.username}]];
       var age = [[${user.age}]];
+
       //자바스크립트 내추럴 템플릿
       var username2 = /*[[${user.username}]]*/ "test username";
+
       //객체
       var user = [[${user}]];
   </script>
@@ -22,9 +24,17 @@
       var age = [[${user.age}]];
 
       //자바스크립트 내추럴 템플릿
+      // 서버에서 렌더링이 되면 주석에 쓰였던 값이 들어감. 파일로 열면 "test username"
       var username2 = /*[[${user.username}]]*/ "test username";
-      //객체
+
+      //객체 => JSON으로 자동 변화
       var user = [[${user}]];
   </script>
+
+<script th:inline="javascript">
+    [# th:each="user, stat : ${users}"]
+    var user[[${stat.count}]] = [[${user}]];
+    [/]
+</script>
 </body>
 </html>
