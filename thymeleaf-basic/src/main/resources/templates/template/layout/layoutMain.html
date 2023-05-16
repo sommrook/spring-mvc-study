@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--th:replace로 인해 기준이 base.html이 된다. 대신 title, link에 layoutMain.html의 태그 자체를 넣어버리고, base.html에 추가해준다.-->
+<head th:replace="template/layout/base :: common_header(~{::title},~{::link})">
+  <title>메인 타이틀</title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+  <link rel="stylesheet" th:href="@{/themes/smoothness/jquery-ui.css}">
+</head>
+<body> 메인 컨텐츠
+</body>
+</html>
